@@ -1,16 +1,24 @@
 {
-  "name": "reasonably-typed",
+  "name": "@nireno/reasonably-typed",
   "version": "0.1.0",
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nireno/reasonably-typed.git"
+  },
   "keywords": [
     "BuckleScript"
   ],
-  "author": "",
+  "author": "nireno",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nireno/reasonably-typed/issues"
+  },
+  "homepage": "https://github.com/nireno/reasonably-typed#readme",
   "devDependencies": {
     "bs-platform": "^4.0.18"
   },
