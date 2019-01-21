@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "scripts": {
     "build": "bsb -make-world",
-    "start": "bsb -make-world -w",
+    "buildw": "bsb -make-world -w",
     "clean": "bsb -clean-world"
   },
   "repository": {
