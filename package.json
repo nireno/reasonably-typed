@@ -19,11 +19,12 @@
     "url": "https://github.com/nireno/reasonably-typed/issues"
   },
   "homepage": "https://github.com/nireno/reasonably-typed#readme",
-  "devDependencies": {
-    "bs-platform": "^4.0.18"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "bs-express": "^0.9.0",
     "helmet": "^3.15.0"
+  },
+  "peerDependencies": {
+    "bs-platform": "^4.0.18",
+    "bs-express": "^0.9.0"
   }
 }
