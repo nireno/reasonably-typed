@@ -7,12 +7,17 @@ var Helmet = require("helmet");
 var Express = require("bs-express/src/Express.js");
 var Process = require("process");
 var Caml_js_exceptions = require("bs-platform/lib/js/caml_js_exceptions.js");
+var ExpressPinoLogger = require("express-pino-logger");
 
 var app = Express.express(/* () */0);
 
 var pino = Pino(/* () */0);
 
 Express.App[/* use */0](app, Helmet(/* () */0));
+
+Express.App[/* use */0](app, ExpressPinoLogger({
+          logger: pino
+        }));
 
 Express.App[/* get */4](app, "/", Express.Middleware[/* from */5]((function (_next, _req, res) {
             return Express.Response[/* sendString */2]("Hello world", res);

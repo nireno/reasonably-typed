@@ -2,5 +2,4 @@
 type options = {logger: Pino.t};
 
 [@bs.module]
-external make : options => Express.Middleware.t =
-  "express-pino-logger";
+external make: options => Express.Middleware.t = "express-pino-logger";
