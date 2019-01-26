@@ -4,7 +4,7 @@
   "scripts": {
     "build": "bsb -make-world",
     "buildw": "bsb -make-world -w",
-    "buildc": "npm run clean && and npm run build",
+    "buildc": "npm run clean && npm run build",
     "clean": "bsb -clean-world",
     "testw": "jest --watchAll"
   },
