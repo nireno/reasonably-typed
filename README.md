@@ -5,9 +5,9 @@ Experimenting with some bucklescript bindings for nodejs packages I use.
 # Get started
 
 ```
-open ReasonablyTyped;
+open NirenoReasonablyTyped;
 let pino = Pino.make();
 Pino.log(pino, "Hello");
 ```
 
-See examples for more.
+See tests and examples for more.
