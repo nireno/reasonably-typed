@@ -1,3 +1,8 @@
+[@bs.val] external dbHost: string = "process.env.db_host_env";
+[@bs.val] external dbName: string = "process.env.db_name_env";
+[@bs.val] external dbPort: string = "process.env.db_port_env";
+[@bs.val] external dbUser: string = "process.env.db_user_env";
+[@bs.val] external dbPass: string = "process.env.db_pass_env";
 open Jest;
 open Express;
 
@@ -17,41 +22,66 @@ let () =
   describe("Session", () => {
     beforeAllPromise(() => {
       let app = express();
+      let pool =
+        Pg.makePool(
+          ~database=dbName,
+          ~host=dbHost,
+          ~user=dbUser,
+          ~password=dbPass,
+          ~port=int_of_string(dbPort),
+          (),
+        );
+
+      let pgstore =
+        PgSession.makeStore(
+          ExpressSession.session,
+          PgSession.options(~pool, ()),
+        );
 
       App.use(
         app,
         ExpressSession.(
-          make(
+          session(
             options(
+              ~store=pgstore,
               ~secret="secret",
               ~resave=false,
               ~saveUninitialized=false,
-              ~cookie=cookieOptions(~secure=false, ()),
+              ~cookie=cookieOptions(~secure=false, ~maxAge=3000, ()),
+              (),
             ),
           )
         ),
       );
       App.use(app, Flash.make());
 
-      App.get(app, ~path="/test-flash") @@
-      Middleware.from((_next, req, res) => {
-        Flash.flash(req, "info", "foo-flash");
-        Response.redirect("/get-flash", res);
+      App.get(app, ~path="/flash-test") @@
+      PromiseMiddleware.from((_next, req, res) => {
+        Flash.flash(req, "info", "flash-foo");
+        ExpressSession.save(. req)
+        |> Js.Promise.then_(_ =>
+             Js.Promise.resolve(Response.redirect("/flash-get", res))
+           );
       });
 
-      App.get(app, ~path="/get-flash") @@
-      Middleware.from((_next, _req, res) => {
-        let messages = Flash.messages(res);
-        Response.sendString(Flash.messageGet(messages[0]), res);
+      App.get(app, ~path="/flash-get") @@
+      Middleware.from((_next, _req, res) =>
+        switch (Flash.messages(res)) {
+        | [|hd|] => Response.sendString(Flash.messageGet(hd), res)
+        | _ => Response.sendString("error", res)
+        }
+      );
+
+      App.get(app, ~path="/state-test") @@
+      PromiseMiddleware.from((_next, req, res) => {
+        ExpressSession.set(req, "foo", "state-foo");
+        ExpressSession.save(. req)
+        |> Js.Promise.then_(_ =>
+             Js.Promise.resolve(Response.redirect("/state-get", res))
+           );
       });
 
-      App.get(app, ~path="/test-state") @@
-      Middleware.from((_next, req, res) => {
-        ExpressSession.set(req, "foo", "foo-state");
-        Response.redirect("/get-state", res);
-      });
-
-      App.get(app, ~path="/get-state") @@
+      App.get(app, ~path="/state-get") @@
       Middleware.from((_next, req, res) => {
         let foo = ExpressSession.get(req, "foo");
         Response.sendString(foo, res);
@@ -61,20 +91,20 @@ let () =
     });
 
     testPromise("keeps flash messages available after redirect", () =>
-      Superagent.get(agent, "http://localhost:3000/test-flash")
+      Superagent.get(agent, "http://localhost:3000/flash-test")
       |> Js.Promise.then_(response =>
            switch (Superagent.textGet(response)) {
-           | "foo-flash" => Js.Promise.resolve(pass)
-           | text => failwith("Expected  but got" ++ text)
+           | "flash-foo" => Js.Promise.resolve(pass)
+           | text => failwith({j|Expected 'flash-foo' but got: $text|j})
            }
          )
     );
     testPromise("keeps session state available after redirect", () =>
-      Superagent.get(agent, "http://localhost:3000/test-state")
+      Superagent.get(agent, "http://localhost:3000/state-test")
       |> Js.Promise.then_(response =>
            switch (Superagent.textGet(response)) {
-           | "foo-state" => Js.Promise.resolve(pass)
-           | text => failwith({j|Expected bar but got $text|j})
+           | "state-foo" => Js.Promise.resolve(pass)
+           | text => failwith({j|Expected 'state-foo' but got: $text|j})
            }
          )
     );

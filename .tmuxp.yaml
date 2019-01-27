@@ -8,3 +8,9 @@ windows:
     - npm run testw
     - npm run buildw
     - pane
+environment:
+  db_host_env: "localhost"
+  db_port_env: "5432"
+  db_name_env: throwaway
+  db_user_env: throwaway
+  db_pass_env: throwaway

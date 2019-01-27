@@ -5,18 +5,23 @@ type cookieOptions = {
   maxAge: int,
 };
 
+type store;
+
 [@bs.deriving abstract]
 type options = {
+  [@bs.optional]
+  store,
   secret: string,
   resave: bool,
   saveUninitialized: bool,
   cookie: cookieOptions,
 };
 
-[@bs.module]
-external make: options => Express.Middleware.t = "express-session";
+type t = options => Express.Middleware.t;
 
-[@bs.get] external session: Express.Request.t => Js.Json.t = "";
+[@bs.module] external session: t = "express-session";
+
+[@bs.get] external asJson: Express.Request.t => Js.Json.t = "";
 [@bs.get] external sessionID: Express.Request.t => string = "";
 
 let set: (Express.Request.t, string, 'a) => unit =

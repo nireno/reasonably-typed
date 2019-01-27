@@ -2,14 +2,17 @@
 'use strict';
 
 var Jest = require("@glennsl/bs-jest/src/jest.js");
+var Curry = require("bs-platform/lib/js/curry.js");
 var Flash = require("flash");
 var Express = require("bs-express/src/Express.js");
-var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Superagent = require("superagent");
+var Caml_format = require("bs-platform/lib/js/caml_format.js");
 var ExpressSession = require("express-session");
 var Caml_js_exceptions = require("bs-platform/lib/js/caml_js_exceptions.js");
-var ExpressSession$ReasonablyTyped = require("../src/ExpressSession.bs.js");
+var Pg$NirenoReasonablyTyped = require("../src/Pg.bs.js");
+var PgSession$NirenoReasonablyTyped = require("../src/PgSession.bs.js");
+var ExpressSession$NirenoReasonablyTyped = require("../src/ExpressSession.bs.js");
 
 function listen(app) {
   return new Promise((function (resolve, reject) {
@@ -39,50 +42,65 @@ var agent = Superagent.agent();
 describe("Session", (function () {
         Jest.beforeAllPromise(undefined, (function (param) {
                 var app = Express.express(/* () */0);
-                Express.App[/* use */0](app, ExpressSession({
+                var pool = Pg$NirenoReasonablyTyped.makePool(process.env.db_name_env, process.env.db_user_env, process.env.db_pass_env, process.env.db_host_env, Caml_format.caml_int_of_string(process.env.db_port_env), /* () */0);
+                var pgstore = PgSession$NirenoReasonablyTyped.makeStore(ExpressSession, {
+                      pool: pool
+                    });
+                Express.App[/* use */0](app, Curry._1(ExpressSession, {
+                          store: pgstore,
                           secret: "secret",
                           resave: false,
                           saveUninitialized: false,
                           cookie: {
-                            secure: false
+                            secure: false,
+                            maxAge: 3000
                           }
                         }));
                 Express.App[/* use */0](app, Flash());
-                Express.App[/* get */4](app, "/test-flash", Express.Middleware[/* from */5]((function (_next, req, res) {
-                            req.flash("info", "foo-flash");
-                            return Express.Response[/* redirect */14]("/get-flash", res);
+                Express.App[/* get */4](app, "/flash-test", Express.PromiseMiddleware[/* from */0]((function (_next, req, res) {
+                            req.flash("info", "flash-foo");
+                            return ExpressSession$NirenoReasonablyTyped.save(req).then((function (param) {
+                                          return Promise.resolve(Express.Response[/* redirect */14]("/flash-get", res));
+                                        }));
                           })));
-                Express.App[/* get */4](app, "/get-flash", Express.Middleware[/* from */5]((function (_next, _req, res) {
-                            var messages = res.locals.flash;
-                            return Express.Response[/* sendString */2](Caml_array.caml_array_get(messages, 0).message, res);
+                Express.App[/* get */4](app, "/flash-get", Express.Middleware[/* from */5]((function (_next, _req, res) {
+                            var match = res.locals.flash;
+                            if (match.length !== 1) {
+                              return Express.Response[/* sendString */2]("error", res);
+                            } else {
+                              var hd = match[0];
+                              return Express.Response[/* sendString */2](hd.message, res);
+                            }
                           })));
-                Express.App[/* get */4](app, "/test-state", Express.Middleware[/* from */5]((function (_next, req, res) {
-                            ExpressSession$ReasonablyTyped.set(req, "foo", "foo-state");
-                            return Express.Response[/* redirect */14]("/get-state", res);
+                Express.App[/* get */4](app, "/state-test", Express.PromiseMiddleware[/* from */0]((function (_next, req, res) {
+                            ExpressSession$NirenoReasonablyTyped.set(req, "foo", "state-foo");
+                            return ExpressSession$NirenoReasonablyTyped.save(req).then((function (param) {
+                                          return Promise.resolve(Express.Response[/* redirect */14]("/state-get", res));
+                                        }));
                           })));
-                Express.App[/* get */4](app, "/get-state", Express.Middleware[/* from */5]((function (_next, req, res) {
-                            var foo = ExpressSession$ReasonablyTyped.get(req, "foo");
+                Express.App[/* get */4](app, "/state-get", Express.Middleware[/* from */5]((function (_next, req, res) {
+                            var foo = ExpressSession$NirenoReasonablyTyped.get(req, "foo");
                             return Express.Response[/* sendString */2](foo, res);
                           })));
                 return listen(app);
               }));
         Jest.testPromise("keeps flash messages available after redirect", undefined, (function (param) {
-                return agent.get("http://localhost:3000/test-flash").then((function (response) {
+                return agent.get("http://localhost:3000/flash-test").then((function (response) {
                               var text = response.text;
-                              if (text === "foo-flash") {
+                              if (text === "flash-foo") {
                                 return Promise.resolve(Jest.pass);
                               } else {
-                                return Pervasives.failwith("Expected  but got" + text);
+                                return Pervasives.failwith("Expected \'flash-foo\' but got: " + (String(text) + ""));
                               }
                             }));
               }));
         return Jest.testPromise("keeps session state available after redirect", undefined, (function (param) {
-                      return agent.get("http://localhost:3000/test-state").then((function (response) {
+                      return agent.get("http://localhost:3000/state-test").then((function (response) {
                                     var text = response.text;
-                                    if (text === "foo-state") {
+                                    if (text === "state-foo") {
                                       return Promise.resolve(Jest.pass);
                                     } else {
-                                      return Pervasives.failwith("Expected bar but got " + (String(text) + ""));
+                                      return Pervasives.failwith("Expected \'state-foo\' but got: " + (String(text) + ""));
                                     }
                                   }));
                     }));
