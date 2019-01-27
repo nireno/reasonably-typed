@@ -1,6 +1,6 @@
 {
   "name": "@nireno/reasonably-typed",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "scripts": {
     "build": "bsb -make-world",
     "buildw": "bsb -make-world -w",
