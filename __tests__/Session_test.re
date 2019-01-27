@@ -33,9 +33,9 @@ let () =
         );
 
       let pgstore =
-        PgSession.makeStore(
+        PgSessionStore.make(
           ExpressSession.session,
-          PgSession.options(~pool, ()),
+          PgSessionStore.options(~pool, ()),
         );
 
       App.use(

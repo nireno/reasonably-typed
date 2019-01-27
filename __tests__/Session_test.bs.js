@@ -11,8 +11,8 @@ var Caml_format = require("bs-platform/lib/js/caml_format.js");
 var ExpressSession = require("express-session");
 var Caml_js_exceptions = require("bs-platform/lib/js/caml_js_exceptions.js");
 var Pg$NirenoReasonablyTyped = require("../src/Pg.bs.js");
-var PgSession$NirenoReasonablyTyped = require("../src/PgSession.bs.js");
 var ExpressSession$NirenoReasonablyTyped = require("../src/ExpressSession.bs.js");
+var PgSessionStore$NirenoReasonablyTyped = require("../src/PgSessionStore.bs.js");
 
 function listen(app) {
   return new Promise((function (resolve, reject) {
@@ -43,7 +43,7 @@ describe("Session", (function () {
         Jest.beforeAllPromise(undefined, (function (param) {
                 var app = Express.express(/* () */0);
                 var pool = Pg$NirenoReasonablyTyped.makePool(process.env.db_name_env, process.env.db_user_env, process.env.db_pass_env, process.env.db_host_env, Caml_format.caml_int_of_string(process.env.db_port_env), /* () */0);
-                var pgstore = PgSession$NirenoReasonablyTyped.makeStore(ExpressSession, {
+                var pgstore = PgSessionStore$NirenoReasonablyTyped.make(ExpressSession, {
                       pool: pool
                     });
                 Express.App[/* use */0](app, Curry._1(ExpressSession, {

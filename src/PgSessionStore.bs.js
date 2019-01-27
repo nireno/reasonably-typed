@@ -2,11 +2,11 @@
 'use strict';
 
 
-function makeStore (session,options){
+function make (session,options){
     let pgSimple = require("connect-pg-simple")
     let Store = pgSimple(session)
     return new Store(options)
   };
 
-exports.makeStore = makeStore;
+exports.make = make;
 /* No side effect */

@@ -5,7 +5,7 @@ type options = {
   tableName: string,
 };
 
-let makeStore: (ExpressSession.t, options) => ExpressSession.store = [%raw
+let make: (ExpressSession.t, options) => ExpressSession.store = [%raw
   (session, options) => {|
     let pgSimple = require("connect-pg-simple")
     let Store = pgSimple(session)
