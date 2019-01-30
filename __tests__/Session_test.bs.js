@@ -5,7 +5,6 @@ var Jest = require("@glennsl/bs-jest/src/jest.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Flash = require("flash");
 var Express = require("bs-express/src/Express.js");
-var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Superagent = require("superagent");
 var Caml_format = require("bs-platform/lib/js/caml_format.js");
 var ExpressSession = require("express-session");
@@ -86,22 +85,12 @@ describe("Session", (function () {
               }));
         Jest.testPromise("keeps flash messages available after redirect", undefined, (function (param) {
                 return agent.get("http://localhost:3000/flash-test").then((function (response) {
-                              var text = response.text;
-                              if (text === "flash-foo") {
-                                return Promise.resolve(Jest.pass);
-                              } else {
-                                return Pervasives.failwith("Expected \'flash-foo\' but got: " + (String(text) + ""));
-                              }
+                              return Promise.resolve(Jest.Expect[/* toBe */2]("flash-foo", Jest.Expect[/* expect */0](response.text)));
                             }));
               }));
         return Jest.testPromise("keeps session state available after redirect", undefined, (function (param) {
                       return agent.get("http://localhost:3000/state-test").then((function (response) {
-                                    var text = response.text;
-                                    if (text === "state-foo") {
-                                      return Promise.resolve(Jest.pass);
-                                    } else {
-                                      return Pervasives.failwith("Expected \'state-foo\' but got: " + (String(text) + ""));
-                                    }
+                                    return Promise.resolve(Jest.Expect[/* toBe */2]("state-foo", Jest.Expect[/* expect */0](response.text)));
                                   }));
                     }));
       }));

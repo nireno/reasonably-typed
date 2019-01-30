@@ -92,20 +92,22 @@ let () =
 
     testPromise("keeps flash messages available after redirect", () =>
       Superagent.get(agent, "http://localhost:3000/flash-test")
-      |> Js.Promise.then_(response =>
-           switch (Superagent.textGet(response)) {
-           | "flash-foo" => Js.Promise.resolve(pass)
-           | text => failwith({j|Expected 'flash-foo' but got: $text|j})
-           }
-         )
+      |> Js.Promise.then_(response => {
+           let testResponse =
+             Expect.(
+               expect(Superagent.textGet(response)) |> toBe("flash-foo")
+             );
+           Js.Promise.resolve(testResponse);
+         })
     );
     testPromise("keeps session state available after redirect", () =>
       Superagent.get(agent, "http://localhost:3000/state-test")
-      |> Js.Promise.then_(response =>
-           switch (Superagent.textGet(response)) {
-           | "state-foo" => Js.Promise.resolve(pass)
-           | text => failwith({j|Expected 'state-foo' but got: $text|j})
-           }
-         )
+      |> Js.Promise.then_(response => {
+           let testResponse =
+             Expect.(
+               expect(Superagent.textGet(response)) |> toBe("state-foo")
+             );
+           Js.Promise.resolve(testResponse);
+         })
     );
   });
