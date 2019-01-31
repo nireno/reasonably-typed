@@ -18,3 +18,5 @@ type asyncPromise2('a, 'b, 'result) = (. 'a, 'b) => Js.Promise.t('result);
 external promisify2:
   asyncCallback2('a, 'b, 'e, 'r) => asyncPromise2('a, 'b, 'r) =
   "promisify";
+
+[@bs.module "util"] external inspect: 'a => string = "inspect";
