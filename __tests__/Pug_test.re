@@ -9,10 +9,7 @@ let () =
       )
     );
     testPromise("Render file async", () =>
-      Pug.renderFileAsync(.
-        "__tests__/views/view.pug",
-        {"name": "foo"} |> Obj.magic,
-      )
+      Pug.renderFileAsync("__tests__/views/view.pug", {"name": "foo"})
       |> Js.Promise.then_(result => {
            let testResult =
              Expect.(

@@ -4,7 +4,16 @@
 var Pug = require("pug");
 var Util = require("util");
 
+function renderFile(path, options) {
+  return Pug.renderFile(path, options);
+}
+
 var renderFileAsync = Util.promisify(Pug.renderFile);
 
-exports.renderFileAsync = renderFileAsync;
+function renderFileAsync$1(path, options) {
+  return renderFileAsync(path, options);
+}
+
+exports.renderFile = renderFile;
+exports.renderFileAsync = renderFileAsync$1;
 /* renderFileAsync Not a pure module */
