@@ -7,9 +7,7 @@ var Pug$NirenoReasonablyTyped = require("../src/Pug.bs.js");
 
 describe("Pug", (function () {
         Jest.test("Render file sync", (function (param) {
-                return Jest.Expect[/* toBe */2]("<html><body><h1>Hello foo</h1></body></html>", Jest.Expect[/* expect */0](Pug.renderFile("__tests__/views/view.pug", {
-                                    name: "foo"
-                                  })));
+                return Jest.Expect[/* toBe */2]("<html><body><h1>Hello </h1></body></html>", Jest.Expect[/* expect */0](Pug.renderFile("__tests__/views/view.pug")));
               }));
         return Jest.testPromise("Render file async", undefined, (function (param) {
                       return Pug$NirenoReasonablyTyped.renderFileAsync("__tests__/views/view.pug", {

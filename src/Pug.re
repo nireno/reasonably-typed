@@ -1,6 +1,7 @@
 type options;
 
 [@bs.module "pug"] external renderFile: (string, options) => string = "";
+[@bs.module "pug"] external renderStaticFile: string => string = "renderFile";
 
 [@bs.module "pug"]
 external renderFileAsync:

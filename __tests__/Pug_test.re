@@ -4,13 +4,8 @@ let () =
   describe("Pug", () => {
     test("Render file sync", () =>
       Expect.(
-        expect(
-          Pug.renderFile(
-            "__tests__/views/view.pug",
-            {"name": "foo"} |> Obj.magic,
-          ),
-        )
-        |> toBe("<html><body><h1>Hello foo</h1></body></html>")
+        expect(Pug.renderStaticFile("__tests__/views/view.pug"))
+        |> toBe("<html><body><h1>Hello </h1></body></html>")
       )
     );
     testPromise("Render file async", () =>
