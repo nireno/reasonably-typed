@@ -6,7 +6,7 @@ windows:
     main-pane-width: 120
   panes:
     - npm run testw
-    - npm run buildw
+    - pane
     - code .
 environment:
   db_host_env: "localhost"
