@@ -23,7 +23,7 @@ let () =
       |> Js.Promise.then_(res => {
            let testResult =
              Expect.(
-               expect(Supertest.Response.getText(res))
+               expect(Supertest.Response.text(res))
                |> toBe("<p>A static page</p>")
              );
            Js.Promise.resolve(testResult);
@@ -44,7 +44,7 @@ let () =
       |> Js.Promise.then_(res => {
            let testResult =
              Expect.(
-               expect(Supertest.Response.getText(res))
+               expect(Supertest.Response.text(res))
                |> toBe("<p>Hello world</p>")
              );
            Js.Promise.resolve(testResult);
