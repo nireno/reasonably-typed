@@ -16,6 +16,15 @@ type poolConfig = {
   "port": int,
 };
 
+type param;
+
+type queryConfig = {
+  .
+  "text": string,
+  "values": array(param),
+  "rowMode": string,
+};
+
 [@bs.module "pg"] [@bs.new] external makePool_: poolConfig => pool = "Pool";
 
 let makePool =
@@ -28,51 +37,60 @@ let makePool =
     "port": port,
   });
 
-let rawRequest: (pool, string) => Js.Promise.t(response) = [%bs.raw
-  {| function(pool, sql) {
-    return pool.query(sql);
-  }|}
-];
+[@bs.send] external query: (pool, queryConfig) => Js.Promise.t(response) = "";
+[@bs.send] external endPool: pool => Js.Promise.t(response) = "end";
 
-let request: (pool, string, array(string)) => Js.Promise.t(response) = [%bs.raw
-  {| function(pool, sql, options) {
-    return pool.query(sql, options);
-  }|}
-];
+let request = (pool, text, ~values=[||], ~arrayMode=false, ()) => {
+  let values': array(param) = Array.map(x => Obj.magic(x), values);
+  let queryConfig = {
+    "text": text,
+    "values": values',
+    "rowMode": arrayMode ? "array" : "",
+  };
+  query(pool, queryConfig);
+};
 
-let rawQuery: (pool, string) => Js.Promise.t(array(row)) =
-  (pool, sql) =>
-    rawRequest(pool, sql)
-    |> Js.Promise.then_(response => response##rows |> Js.Promise.resolve);
+let query = (pool, sql, ~values=[||], ~arrayMode=false, ()) =>
+  request(pool, sql, ~values, ~arrayMode, ())
+  |> Js.Promise.then_(response => response##rows |> Js.Promise.resolve);
 
-let query: (pool, string, array(string)) => Js.Promise.t(array(row)) =
-  (pool, sql, params) =>
-    request(pool, sql, params)
-    |> Js.Promise.then_(response => response##rows |> Js.Promise.resolve);
+let queryOne = (pool, sql, ~values=[||], ~arrayMode=false, ()) =>
+  query(pool, sql, ~values, ~arrayMode, ())
+  |> Js.Promise.then_(rows =>
+       (
+         switch (rows) {
+         | [||] => None
+         | rows => Some(rows[0])
+         }
+       )
+       |> Js.Promise.resolve
+     );
 
-let rawQueryOne: (pool, string) => Js.Promise.t(option(row)) =
-  (pool, sql) =>
-    rawQuery(pool, sql)
-    |> Js.Promise.then_(rows =>
+let queryOneValue:
+  (
+    pool,
+    string,
+    ~values: array('a)=?,
+    ~decoder: Js.Json.t => option('a),
+    unit
+  ) =>
+  Js.Promise.t(option('a)) =
+  (pool, sql, ~values=[||], ~decoder, ()) => {
+    queryOne(pool, sql, ~values, ~arrayMode=true, ())
+    |> Js.Promise.then_(maybeRow =>
          (
-           switch (rows) {
-           | [||] => None
-           | rows => Some(rows[0])
+           switch (maybeRow) {
+           | None => None
+           | Some(row) =>
+             let xs: array(Js.Json.t) = Obj.magic(row);
+             switch (xs) {
+             | [||] => None
+             | arr => arr[0] |> decoder
+             };
            }
          )
          |> Js.Promise.resolve
        );
+  };
 
-let queryOne: (pool, string, array(string)) => Js.Promise.t(option(row)) =
-  (pool, sql, params) =>
-    query(pool, sql, params)
-    |> Js.Promise.then_(rows =>
-         Js.Promise.resolve(
-           switch (rows) {
-           | [||] => None
-           | rows => Some(rows[0])
-           },
-         )
-       );
-
-let endPool: pool => unit = [%bs.raw {|function(pool){ pool.end();}|}];
+let queryOneString = queryOneValue(~decoder=Js.Json.decodeString);
