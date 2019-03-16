@@ -50,12 +50,12 @@ let request = (pool, text, ~values=[||], ~arrayMode=false, ()) => {
   query(pool, queryConfig);
 };
 
-let query = (pool, sql, ~values=[||], ~arrayMode=false, ()) =>
-  request(pool, sql, ~values, ~arrayMode, ())
+let query = (pool, text, ~values=[||], ~arrayMode=false, ()) =>
+  request(pool, text, ~values, ~arrayMode, ())
   |> Js.Promise.then_(response => response##rows |> Js.Promise.resolve);
 
-let queryOne = (pool, sql, ~values=[||], ~arrayMode=false, ()) =>
-  query(pool, sql, ~values, ~arrayMode, ())
+let queryOne = (pool, text, ~values=[||], ~arrayMode=false, ()) =>
+  query(pool, text, ~values, ~arrayMode, ())
   |> Js.Promise.then_(rows =>
        (
          switch (rows) {
@@ -75,8 +75,8 @@ let queryOneValue:
     unit
   ) =>
   Js.Promise.t(option('a)) =
-  (pool, sql, ~values=[||], ~decoder, ()) => {
-    queryOne(pool, sql, ~values, ~arrayMode=true, ())
+  (pool, text, ~values=[||], ~decoder, ()) => {
+    queryOne(pool, text, ~values, ~arrayMode=true, ())
     |> Js.Promise.then_(maybeRow =>
          (
            switch (maybeRow) {
@@ -94,3 +94,24 @@ let queryOneValue:
   };
 
 let queryOneString = queryOneValue(~decoder=Js.Json.decodeString);
+
+module type PgPool = {let pool: pool;};
+
+module Make = (Pool: PgPool) => {
+  let request = (text, ~values=[||], ~arrayMode=false, ()) =>
+    request(Pool.pool, text, ~values, ~arrayMode, ());
+
+  let query = (text, ~values=[||], ~arrayMode=false, ()) =>
+    query(Pool.pool, text, ~values, ~arrayMode, ());
+
+  let queryOne = (text, ~values=[||], ~arrayMode=false, ()) =>
+    queryOne(Pool.pool, text, ~values, ~arrayMode, ());
+
+  let queryOneValue = (text, ~values=[||], ~decoder, ()) =>
+    queryOneValue(Pool.pool, text, ~values, ~decoder, ());
+
+  let queryOneString = (text, ~values=[||], ()) =>
+    queryOneString(Pool.pool, text, ~values, ());
+
+  let endPool = () => endPool(Pool.pool);
+};
