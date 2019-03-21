@@ -5,7 +5,7 @@ windows:
   options:
     main-pane-width: 120
   panes:
-    - npm run testw
+    - npm run test-watch
     - pane
     - code .
 environment:

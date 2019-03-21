@@ -3,10 +3,10 @@
   "version": "0.17.0",
   "scripts": {
     "build": "bsb -make-world",
-    "buildw": "bsb -make-world -w",
-    "buildc": "npm run clean && npm run build",
+    "build-watch": "bsb -make-world -w",
     "clean": "bsb -clean-world",
-    "testw": "jest --watchAll --config jest.config.js"
+    "clean-build": "npm run clean && npm run build",
+    "test-watch": "jest --watchAll --config jest.config.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/nireno/reasonably-typed#readme",
   "devDependencies": {
-    "@glennsl/bs-jest": "^0.4.7",
+    "@glennsl/bs-jest": "^0.4.8",
     "bs-express": "^0.9.0",
     "bs-platform": "^4.0.18"
   },
@@ -31,10 +31,12 @@
     "express-pino-logger": "^4.0.0",
     "express-session": "^1.15.6",
     "flash": "^1.1.0",
+    "hashids": "^1.2.2",
     "helmet": "^3.15.0",
     "pg": "^7.8.0",
     "pino": "^5.10.8",
     "pug": "^2.0.3",
+    "shortid": "^2.2.14",
     "superagent": "^4.1.0",
     "supertest": "^3.4.2",
     "validator": "^10.11.0"
