@@ -1,5 +1,5 @@
 type t;
-[@bs.module] external make: 'options => t = "pino";
+[@bs.module] external instantiate: 'options => t = "pino";
 
 [@bs.send] external info: (t, 'a) => unit = "";
 [@bs.send] external info2: (t, 'a, 'b) => unit = "info";
@@ -11,6 +11,7 @@ type t;
 [@bs.send] external error2: (t, 'a, 'b) => unit = "error";
 [@bs.send] external fatal: (t, 'a) => unit = "fatal";
 [@bs.send] external fatal2: (t, 'a, 'b) => unit = "fatal";
+[@bs.send] external child: (t, 'a) => t = "child";
 
 type logger = {
   info:'a . 'a => unit,
@@ -23,10 +24,11 @@ type logger = {
   error2: 'a 'b. ('a, 'b) => unit,
   fatal:'a . 'a => unit,
   fatal2: 'a 'b. ('a, 'b) => unit,
+  makeChild: 'a . 'a => (t, logger)
 };
 
-let make = options => {
-  let pino = make(options);
+
+let rec makeLogger = pino => {
   let logger = {
     info: a => info(pino, a),
     info2: (a, b) => info2(pino, a, b),
@@ -38,6 +40,12 @@ let make = options => {
     error2: (a, b) => error2(pino, a, b),
     fatal: a => fatal(pino, a),
     fatal2: (a, b) => fatal2(pino, a, b),
+    makeChild: bindings => {
+      let childPino = child(pino, bindings);
+      makeLogger(childPino);
+    },
   };
   (pino, logger);
 };
+
+let make = (options) => instantiate(options) |> makeLogger
