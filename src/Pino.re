@@ -14,6 +14,7 @@ type t;
 [@bs.send] external child: (t, 'a) => t = "child";
 
 type logger = {
+  instance: t,
   info:'a . 'a => unit,
   info2: 'a 'b. ('a, 'b) => unit,
   debug:'a . 'a => unit,
@@ -24,28 +25,27 @@ type logger = {
   error2: 'a 'b. ('a, 'b) => unit,
   fatal:'a . 'a => unit,
   fatal2: 'a 'b. ('a, 'b) => unit,
-  makeChild: 'a . 'a => (t, logger)
+  makeChild: 'a . 'a => logger
 };
 
 
-let rec makeLogger = pino => {
-  let logger = {
-    info: a => info(pino, a),
-    info2: (a, b) => info2(pino, a, b),
-    debug: a => debug(pino, a),
-    debug2: (a, b) => debug2(pino, a, b),
-    warn: a => warn(pino, a),
-    warn2: (a, b) => warn2(pino, a, b),
-    error: a => error(pino, a),
-    error2: (a, b) => error2(pino, a, b),
-    fatal: a => fatal(pino, a),
-    fatal2: (a, b) => fatal2(pino, a, b),
-    makeChild: bindings => {
-      let childPino = child(pino, bindings);
-      makeLogger(childPino);
-    },
-  };
-  (pino, logger);
+/** Bake the pino instance into each send call */
+let rec bake = pino => {
+  instance: pino,
+  info: a => info(pino, a),
+  info2: (a, b) => info2(pino, a, b),
+  debug: a => debug(pino, a),
+  debug2: (a, b) => debug2(pino, a, b),
+  warn: a => warn(pino, a),
+  warn2: (a, b) => warn2(pino, a, b),
+  error: a => error(pino, a),
+  error2: (a, b) => error2(pino, a, b),
+  fatal: a => fatal(pino, a),
+  fatal2: (a, b) => fatal2(pino, a, b),
+  makeChild: bindings => {
+    let childPino = child(pino, bindings);
+    bake(childPino);
+  },
 };
 
-let make = (options) => instantiate(options) |> makeLogger
+let make = (options) => instantiate(options) |> bake
