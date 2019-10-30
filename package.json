@@ -26,7 +26,7 @@
     "bs-platform": "^5.0.4"
   },
   "dependencies": {
-    "connect-pg-simple": "^5.0.0",
+    "connect-pg-simple": "^6.0.1",
     "express-pino-logger": "^4.0.0",
     "express-session": "^1.16.2",
     "flash": "^1.1.0",
