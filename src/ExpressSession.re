@@ -21,8 +21,8 @@ type t = options => Express.Middleware.t;
 
 [@bs.module] external session: t = "express-session";
 
-[@bs.get] external asJson: Express.Request.t => Js.Json.t = "";
-[@bs.get] external sessionID: Express.Request.t => string = "";
+[@bs.get] external asJson: Express.Request.t => Js.Json.t = "asJson";
+[@bs.get] external sessionID: Express.Request.t => string = "sessionID";
 
 let set: (Express.Request.t, string, 'a) => unit =
   [@ocaml.warning "-27"]

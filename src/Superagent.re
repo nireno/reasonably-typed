@@ -8,6 +8,6 @@ type t = (string, string) => Js.Promise.t(response);
 
 [@bs.module] external request: t = "superagent";
 
-[@bs.send] external agent: t => t = "";
+[@bs.send] external agent: t => t = "agent";
 
-[@bs.send] external get: (t, string) => Js.Promise.t(response) = "";
+[@bs.send] external get: (t, string) => Js.Promise.t(response) = "get";

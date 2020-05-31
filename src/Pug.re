@@ -1,6 +1,6 @@
 type options;
 
-[@bs.module "pug"] external renderFile: (string, options) => string = "";
+[@bs.module "pug"] external renderFile: (string, options) => string = "renderFile";
 let renderFile = (path, options) => renderFile(path, options |> Obj.magic);
 
 [@bs.module "pug"] external renderStaticFile: string => string = "renderFile";

@@ -6,9 +6,11 @@ type options = {
 };
 
 let make: (ExpressSession.t, options) => ExpressSession.store = [%raw
-  (session, options) => {|
+  {|
+  (session, options) => {
     let pgSimple = require("connect-pg-simple")
     let Store = pgSimple(session)
     return new Store(options)
+  }
   |}
 ];

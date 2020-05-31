@@ -37,7 +37,7 @@ let makePool =
     "port": port,
   });
 
-[@bs.send] external query: (pool, queryConfig) => Js.Promise.t(response) = "";
+[@bs.send] external query: (pool, queryConfig) => Js.Promise.t(response) = "query";
 [@bs.send] external endPool: pool => Js.Promise.t(response) = "end";
 
 let request = (pool, text, ~values=[||], ~arrayMode=false, ()) => {

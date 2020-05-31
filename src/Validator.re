@@ -1,1 +1,1 @@
-[@bs.module "validator"] external isEmail: string => bool = "";
+[@bs.module "validator"] external isEmail: string => bool = "isEmail";

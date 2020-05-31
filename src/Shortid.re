@@ -1,2 +1,2 @@
-[@bs.module "shortid"] external characters: string => unit = "";
-[@bs.module "shortid"] external generate: unit => string = "";
+[@bs.module "shortid"] external characters: string => unit = "characters";
+[@bs.module "shortid"] external generate: unit => string = "generate";

@@ -1,11 +1,16 @@
 {
   "name": "@nireno/reasonably-typed",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "scripts": {
-    "build": "bsb -clean-world -make-world",
-    "build:watch": "bsb -clean-world -make-world -w",
-    "test": "jest --config jest.config.js",
-    "test:watch": "jest --watchAll --config jest.config.js"
+    "build": "run-s clean:bs build:bs",
+    "dev": "npm-run-all clean:bs build:bs -p dev:test",
+    "dev:bs": "bsb -make-world -w",
+    "build:bs": "bsb -make-world",
+    "clean:bs": "bsb -clean-world",
+    "test:preflight": "run-s clean:bs build:bs",
+    "test:jest": "jest --config jest.config.js",
+    "test": "run-s test:preflight test:jest",
+    "dev:test": "jest --watchAll --config jest.config.js"
   },
   "repository": {
     "type": "git",
@@ -21,27 +26,28 @@
   },
   "homepage": "https://github.com/nireno/reasonably-typed#readme",
   "devDependencies": {
-    "@glennsl/bs-jest": "^0.4.8",
-    "bs-express": "^0.12.0",
-    "bs-platform": "^5.0.4"
+    "@glennsl/bs-jest": "^0.5.1",
+    "bs-express": "^1.0.1",
+    "bs-platform": "^7.3.2"
   },
   "dependencies": {
-    "connect-pg-simple": "^5.0.0",
-    "express-pino-logger": "^4.0.0",
-    "express-session": "^1.16.2",
+    "connect-pg-simple": "^6.1.0",
+    "express-pino-logger": "^5.0.0",
+    "express-session": "^1.17.1",
     "flash": "^1.1.0",
-    "hashids": "^1.2.2",
-    "helmet": "^3.18.0",
-    "pg": "^7.11.0",
-    "pino": "^5.12.6",
-    "pug": "^2.0.4",
-    "shortid": "^2.2.14",
-    "superagent": "^5.1.0",
+    "hashids": "^2.2.1",
+    "helmet": "^3.22.0",
+    "npm-run-all": "^4.1.5",
+    "pg": "^8.2.1",
+    "pino": "^6.3.1",
+    "pug": "^3.0.0",
+    "shortid": "^2.2.15",
+    "superagent": "^5.2.2",
     "supertest": "^4.0.2",
-    "validator": "^11.0.0"
+    "validator": "^13.0.0"
   },
   "peerDependencies": {
-    "bs-express": "^0.12.0",
-    "bs-platform": "^5.0.4"
+    "bs-express": "^1.0.0",
+    "bs-platform": "^7.0.0"
   }
 }

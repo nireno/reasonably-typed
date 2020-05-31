@@ -7,7 +7,7 @@ type item = {
 
 [@bs.module] external make: unit => Express.Middleware.t = "flash";
 
-[@bs.send] external flash: (Express.Request.t, string, string) => unit = "";
+[@bs.send] external flash: (Express.Request.t, string, string) => unit = "flash";
 
 [@bs.get] [@bs.scope "locals"]
 external messages: Express.Response.t => array(item) = "flash";

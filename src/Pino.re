@@ -1,9 +1,9 @@
 type t;
 [@bs.module] external instantiate: 'options => t = "pino";
 
-[@bs.send] external info: (t, 'a) => unit = "";
+[@bs.send] external info: (t, 'a) => unit = "info";
 [@bs.send] external info2: (t, 'a, 'b) => unit = "info";
-[@bs.send] external debug: (t, 'a) => unit = "";
+[@bs.send] external debug: (t, 'a) => unit = "debug";
 [@bs.send] external debug2: (t, 'a, 'b) => unit = "debug";
 [@bs.send] external warn: (t, 'a) => unit = "warn";
 [@bs.send] external warn2: (t, 'a, 'b) => unit = "warn";
