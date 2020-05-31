@@ -10,3 +10,23 @@ logger.info("Hello");
 ```
 
 See tests and examples for more.
+
+## Testing - Setup postgres session store database
+
+```
+sudo -s -u postgres
+createuser --pwprompt throwaway
+createdb --owner throwaway throwaway
+psql --host 127.0.0.1 -U throwaway -d throwaway
+
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
+
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+CREATE INDEX "IDX_session_expire" ON "session" ("expire");
+```
