@@ -44,7 +44,7 @@
     "shortid": "^2.2.15",
     "superagent": "^5.2.2",
     "supertest": "^4.0.2",
-    "validator": "^13.0.0"
+    "validator": "^13.7.0"
   },
   "peerDependencies": {
     "bs-express": "^1.0.0",
